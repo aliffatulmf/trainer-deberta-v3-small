@@ -26,7 +26,8 @@ def train(opt):
         torch_dtype=torch.float16,
     )
 
-    model = prepare_model_for_kbit_training(model, gradient_checkpointing_kwargs={"use_reentrant": True})
+    # model = prepare_model_for_kbit_training(model, gradient_checkpointing_kwargs={"use_reentrant": True})
+    model = prepare_model_for_kbit_training(model) # disable for multi-gpu train
 
     # Dataset
     def preprocess_function(examples):
