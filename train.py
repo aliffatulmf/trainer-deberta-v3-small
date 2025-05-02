@@ -14,6 +14,10 @@ MODEL_ID = "google/flan-t5-small"
 
 
 def train(opt):
+    from accelerate import Accelerator
+
+    accelerator = Accelerator()
+
     # Model & Tokenizer
     tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, legacy=False)
     model = AutoModelForSeq2SeqLM.from_pretrained(
@@ -102,6 +106,7 @@ def train(opt):
         greater_is_better=False,
         per_device_train_batch_size=opt.batch_size,
         per_device_eval_batch_size=opt.batch_size * 2,
+
     )
 
     if opt.accelerator_config:
@@ -119,12 +124,13 @@ def train(opt):
             ),
         ],
     )
-    trainer.args.n_gpu = 2
 
     trainer.train()
 
-    model.save_pretrained(opt.output)
-    tokenizer.save_pretrained(opt.output)
+    if accelerator.is_main_process:
+        model.save_pretrained(opt.output)
+        tokenizer.save_pretrained(opt.output)
+        accelerator.print(f"Adapter LoRA final saved in {opt.output}")
 
 
 if __name__ == "__main__":
