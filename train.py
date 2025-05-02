@@ -118,6 +118,7 @@ def train(opt):
                 early_stopping_threshold=0.0,
             ),
         ],
+        n_gpu=opt.n_gpu,
     )
 
     trainer.train()
@@ -135,6 +136,7 @@ if __name__ == "__main__":
     parser.add_argument("--fp16", action="store_true")
     parser.add_argument("--accelerator_config", type=str, default=None)
     parser.add_argument("--output", type=str, default="flan-t5-small-lora-finetuned-gambling-8bit")
+    parser.add_argument("--n_gpu", type=int, default=1)
     args = parser.parse_args()
 
     train(args)
