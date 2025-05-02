@@ -100,8 +100,11 @@ def train(opt):
         greater_is_better=False,
         per_device_train_batch_size=opt.batch_size,
         per_device_eval_batch_size=opt.batch_size * 2,
-        accelerator_config=opt.accelerator_config
+        # accelerator_config=opt.accelerator_config
     )
+
+    if opt.accelerator_config:
+        training_args.accelerator_config = opt.accelerator_config
 
     trainer = Trainer(
         model=model,
@@ -128,7 +131,7 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", type=int, required=True)
     parser.add_argument("--batch_size", type=int, default=16)
     parser.add_argument("--learning_rate", type=float, default=2e-3)
-    parser.add_argument("--accelerator_config", type=str, required=True)
+    parser.add_argument("--accelerator_config", type=str, default=None)
     parser.add_argument("--output", type=str, default="flan-t5-small-lora-finetuned-gambling-8bit")
     args = parser.parse_args()
 
