@@ -38,7 +38,7 @@ def train(config):
         gradient_accumulation_steps=config["gradient_accumulation_steps"],
     )
 
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, use_fast=False, legacy=False) # disable fast tokenizer
     quantization_config = BitsAndBytesConfig(load_in_8bit=config["load_in_8bit"])
     model = AutoModelForSequenceClassification.from_pretrained(
         MODEL_ID,
