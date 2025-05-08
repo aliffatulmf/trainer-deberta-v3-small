@@ -42,8 +42,8 @@ def train(config):
     model = AutoModelForSequenceClassification.from_pretrained(
         MODEL_ID,
         quantization_config=quantization_config,
-        use_cache=False,
     )
+    model.config.use_cache = False
 
     model = prepare_model_for_kbit_training(model)
 
