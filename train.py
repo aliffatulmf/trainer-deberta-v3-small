@@ -131,7 +131,7 @@ def train(config):
         greater_is_better=config["greater_is_better"],
         per_device_train_batch_size=config["batch_size"],
         per_device_eval_batch_size=config["eval_batch_size"],
-        fp16: True,
+        fp16=True,
         # logging_steps=config["logging_steps"],
         # save_steps=config["save_steps"],
         # eval_steps=config["eval_steps"],
