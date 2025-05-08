@@ -13,7 +13,7 @@ try:
     )
     from transformers import (
         AutoTokenizer,
-        DebertaV2ForSequenceClassification,
+        AutoModelForSequenceClassification,
         BitsAndBytesConfig,
         TrainingArguments,
         Trainer,
@@ -39,7 +39,7 @@ def train(config):
 
     tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
     quantization_config = BitsAndBytesConfig(load_in_8bit=config["load_in_8bit"])
-    model = DebertaV2ForSequenceClassification.from_pretrained(
+    model = AutoModelForSequenceClassification.from_pretrained(
         MODEL_ID,
         quantization_config=quantization_config,
         use_cache=False,
@@ -72,7 +72,7 @@ def train(config):
 
         return model_inputs
 
-    dataset = load_dataset("aliffatulmf/medium_gambling_23k")
+    dataset = load_dataset(config.dataset)
     # dataset = dataset.map(
     #     preprocess_function,
     #     batched=True,
@@ -84,9 +84,9 @@ def train(config):
     #     seed=config["seed"]
     # )
 
-    dataset = dataset["train"].train_test_split(
-        test_size=config["test_size"], shuffle=config["shuffle"], seed=config["seed"]
-    )
+    # dataset = dataset["train"].train_test_split(
+    #     test_size=config["test_size"], shuffle=config["shuffle"], seed=config["seed"]
+    # )
 
     with accelerator.main_process_first():
         train_dataset = dataset["train"].map(
@@ -96,10 +96,10 @@ def train(config):
             desc="Running tokenizer on train dataset",
         )
 
-        eval_dataset = dataset["test"].map(
+        eval_dataset = dataset["validation"].map(
             preprocess_function,
             batched=True,
-            remove_columns=dataset["test"].column_names,
+            remove_columns=dataset["validation"].column_names,
             desc="Running tokenizer on eval dataset",
         )
 
