@@ -3,6 +3,7 @@ import os
 import sys
 
 try:
+    import torch
     from accelerate import Accelerator
     from datasets import load_dataset
     from peft import (
@@ -67,7 +68,7 @@ def train(config):
         # )
         # labels = labels["input_ids"]
         # labels[labels == tokenizer.pad_token_id] = -100
-        model_inputs["labels"] = examples["label"]
+        model_inputs["labels"] = torch.tensor(examples["label"])
 
         return model_inputs
 
@@ -206,7 +207,7 @@ if __name__ == "__main__":
         "mixed_precision": "fp16",
         "gradient_accumulation_steps": 2,
         # Quantization configuration
-        "load_in_8bit": False,
+        "load_in_8bit": True,
         # Tokenizer configuration
         "input_max_length": 256,
         "target_max_length": 3,
