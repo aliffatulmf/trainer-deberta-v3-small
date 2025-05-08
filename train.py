@@ -117,7 +117,7 @@ def train(config):
     accelerator.print("Trainable parameters:")
     model.print_trainable_parameters()
 
-    training_args = SFTConfig(
+    training_args = TrainingArguments(
         output_dir=config["output"],
         eval_strategy=config["eval_strategy"],
         save_strategy=config["save_strategy"],
@@ -139,7 +139,7 @@ def train(config):
         log_level=config["log_level"],
     )
 
-    trainer = SFTTrainer(
+    trainer = Trainer(
         model=model,
         args=training_args,
         train_dataset=train_dataset,
