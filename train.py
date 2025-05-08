@@ -49,7 +49,6 @@ def train(config):
 
     def preprocess_function(examples):
         inputs = examples["comment"]
-        targets = examples["label"]
 
         model_inputs = tokenizer(
             inputs,
@@ -59,20 +58,20 @@ def train(config):
             return_tensors=config["return_tensors"],
         )
 
-        labels = tokenizer(
-            targets,
-            max_length=config["target_max_length"],
-            padding=config["padding"],
-            truncation=config["target_truncation"],
-            return_tensors=config["return_tensors"],
-        )
-
-        labels = labels["input_ids"]
-        labels[labels == tokenizer.pad_token_id] = -100
+        # labels = tokenizer(
+        #     targets,
+        #     max_length=config["target_max_length"],
+        #     padding=config["padding"],
+        #     truncation=config["target_truncation"],
+        #     return_tensors=config["return_tensors"],
+        # )
+        # labels = labels["input_ids"]
+        # labels[labels == tokenizer.pad_token_id] = -100
+        model_inputs["labels"] = examples["label"]
 
         return model_inputs
 
-    dataset = load_dataset(config.dataset)
+    dataset = load_dataset(config["dataset"])
     # dataset = dataset.map(
     #     preprocess_function,
     #     batched=True,
@@ -109,7 +108,7 @@ def train(config):
         lora_dropout=config["lora_dropout"],
         target_modules=config["lora_target_modules"],
         bias=config["lora_bias"],
-        task_type=TaskType.SEQ_2_SEQ_LM,
+        task_type=TaskType.SEQ_CLS,
     )
 
     model = get_peft_model(model, lora_config)
@@ -223,7 +222,7 @@ if __name__ == "__main__":
         "lora_r": 32,
         "lora_alpha": 64,
         "lora_dropout": 0.2,
-        "lora_target_modules": ["q", "v"],
+        "lora_target_modules": ["query_proj", "value_proj"],
         "lora_bias": "none",
         # Training arguments
         "eval_strategy": "epoch",
