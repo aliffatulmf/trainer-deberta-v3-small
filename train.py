@@ -42,11 +42,11 @@ def train(config):
     quantization_config = BitsAndBytesConfig(load_in_8bit=config["load_in_8bit"])
     model = AutoModelForSequenceClassification.from_pretrained(
         MODEL_ID,
-        quantization_config=quantization_config,
+        # quantization_config=quantization_config, # disable quantized
         # use_cache=False, # disable use_cache for classification
     )
 
-    model = prepare_model_for_kbit_training(model)
+    # model = prepare_model_for_kbit_training(model)
 
     def preprocess_function(examples):
         inputs = examples["comment"]
@@ -122,21 +122,22 @@ def train(config):
         eval_strategy=config["eval_strategy"],
         save_strategy=config["save_strategy"],
         learning_rate=config["learning_rate"],
-        auto_find_batch_size=config["auto_find_batch_size"],
+        # auto_find_batch_size=config["auto_find_batch_size"],
         num_train_epochs=config["epochs"],
-        save_total_limit=config["save_total_limit"],
+        # save_total_limit=config["save_total_limit"],
         report_to=config["report_to"],
         load_best_model_at_end=config["load_best_model_at_end"],
-        metric_for_best_model=config["metric_for_best_model"],
+        # metric_for_best_model=config["metric_for_best_model"],
         greater_is_better=config["greater_is_better"],
         per_device_train_batch_size=config["batch_size"],
         per_device_eval_batch_size=config["eval_batch_size"],
-        logging_steps=config["logging_steps"],
-        save_steps=config["save_steps"],
-        eval_steps=config["eval_steps"],
-        gradient_checkpointing=config["gradient_checkpointing"],
-        gradient_checkpointing_kwargs=config["gradient_checkpointing_kwargs"],
-        log_level=config["log_level"],
+        fp16: True,
+        # logging_steps=config["logging_steps"],
+        # save_steps=config["save_steps"],
+        # eval_steps=config["eval_steps"],
+        # gradient_checkpointing=config["gradient_checkpointing"],
+        # gradient_checkpointing_kwargs=config["gradient_checkpointing_kwargs"],
+        # log_level=config["log_level"],
     )
 
     trainer = Trainer(
@@ -222,7 +223,7 @@ if __name__ == "__main__":
         # LoRA configuration
         "lora_r": 32,
         "lora_alpha": 64,
-        "lora_dropout": 0.2,
+        "lora_dropout": 0.1,
         "lora_target_modules": ["query_proj", "value_proj"],
         "lora_bias": "none",
         # Training arguments
